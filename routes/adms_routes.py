@@ -265,7 +265,7 @@ def cdata():
             conn = get_db_connection()
             
             # Find device ID
-            device = conn.execute('SELECT id FROM fingerprint_devices WHERE device_ip = ?', (request.remote_addr,)).fetchone()
+            device = conn.execute('SELECT id FROM fingerprint_devices WHERE device_name = ? OR device_ip = ?', (sn, request.remote_addr)).fetchone()
             device_id = device['id'] if device else 0
             
             for line in lines:
@@ -320,7 +320,7 @@ def cdata():
             lines = data.split('\n')
             
             conn = get_db_connection()
-            device = conn.execute('SELECT id FROM fingerprint_devices WHERE device_ip = ?', (request.remote_addr,)).fetchone()
+            device = conn.execute('SELECT id FROM fingerprint_devices WHERE device_name = ? OR device_ip = ?', (sn, request.remote_addr)).fetchone()
             device_id = device['id'] if device else 0
             
             if device_id:
@@ -433,7 +433,7 @@ def cdata():
                 conn = get_db_connection()
                 try:
                     # Find Device
-                    device = conn.execute('SELECT id FROM fingerprint_devices WHERE device_ip = ?', (request.remote_addr,)).fetchone()
+                    device = conn.execute('SELECT id FROM fingerprint_devices WHERE device_name = ? OR device_ip = ?', (sn, request.remote_addr)).fetchone()
                     device_id = device['id'] if device else 0
                     
                     if device_id:
@@ -629,8 +629,9 @@ def get_request():
                  # مفصولًا. فتصل الساعةُ قديمةً ويضبط الجهاز نفسه عليها،
                  # وساعته هي مصدر طوابع الحضور: انحرافها يزيح الأجر
                  # تأخيرًا وهميًّا أو عملًا إضافيًّا وهميًّا.
-                 now_str = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                 cmd_str = f"C:{cmd_id}:SET OPTION Time={now_str}"
+                 # Use standard ADMS format for time sync: SET OPTIONS DateTime=UnixTimestamp
+                 unix_time = int(datetime.now().timestamp())
+                 cmd_str = f"C:{cmd_id}:SET OPTIONS DateTime={unix_time}"
             
             elif cmd_type.startswith('DATA QUERY'):
                 # Many DATA QUERY commands (USERINFO, FINGERTMP) can take PIN=... or other params

@@ -2,6 +2,7 @@ from flask import Flask
 from routes.adms_routes import adms_bp
 from utils.db import init_db
 import os
+import sys
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('ADMS_SECRET_KEY', os.urandom(24))
@@ -20,4 +21,4 @@ if __name__ == '__main__':
         app.run(host=host, port=port, debug=False)
     except Exception as e:
         print(f"Error: {e}")
-        input("Press Enter to exit...")
+        sys.exit(1)

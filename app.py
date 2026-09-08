@@ -312,7 +312,8 @@ def main():
         print(f"Starting HR System server on http://{host}:{port} (debug={debug})")
     
     try:
-        app.run(host=host, port=port, debug=debug, use_reloader=False)
+        from waitress import serve
+        serve(app, host=host, port=port, threads=8)
     except Exception as e:
         try:
             print(f"خطأ في تشغيل الخادم: {e}")

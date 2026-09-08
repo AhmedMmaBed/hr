@@ -16,9 +16,10 @@ if __name__ == '__main__':
     port = int(os.environ.get('ADMS_PORT', 8081))
     host = '0.0.0.0'
     
-    print(f"🚀 Starting ADMS Server on {host}:{port}")
+    print(f"🚀 Starting ADMS Server on {host}:{port} using Waitress...")
     try:
-        app.run(host=host, port=port, debug=False)
+        from waitress import serve
+        serve(app, host=host, port=port, threads=8)
     except Exception as e:
         print(f"Error: {e}")
         sys.exit(1)

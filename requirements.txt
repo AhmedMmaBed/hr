@@ -16,3 +16,4 @@ requests
 flask_babel
 pandas
 waitress>=3.0.0
+docxtpl

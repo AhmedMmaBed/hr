@@ -22,9 +22,11 @@
             <button class="btn btn-outline-success" onclick="pmExport()">
                 <i class="fas fa-file-excel me-2"></i>{{ _('x.pm_export_excel') }}
             </button>
+            {% if has_permission('salary.calculate') %}
             <button id="pmSaveBtn" class="btn btn-success" onclick="pmSave()">
                 <i class="fas fa-save me-2"></i>{{ _('x.pm_save_run') }}
             </button>
+            {% endif %}
         </div>
     </div>
 

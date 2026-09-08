@@ -15,7 +15,7 @@ def _uid():
 # ================= Monthly Transactions =================
 @payroll_bp.route('/payroll/transactions')
 @login_required
-@require_permission('salary.calculate')
+@require_permission('page.payroll_transactions')
 def transactions():
     conn = get_db_connection()
     now = datetime.now()
@@ -107,7 +107,7 @@ def cancel_transaction(id):
 # ================= Loans =================
 @payroll_bp.route('/payroll/loans')
 @login_required
-@require_permission('salary.calculate')
+@require_permission('page.loans')
 def loans():
     conn = get_db_connection()
     rows = conn.execute('''
@@ -337,7 +337,7 @@ def end_salary_item(id):
 # ================= Monthly Payroll Sheet =================
 @payroll_bp.route('/payroll/monthly')
 @login_required
-@require_permission('salary.calculate')
+@require_permission('page.payroll_monthly')
 def monthly_sheet():
     now = datetime.now()
     month = int(request.args.get('month', now.month))
@@ -415,7 +415,7 @@ def api_monthly_payroll_save():
 
 @payroll_bp.route('/payroll/hours_approval')
 @login_required
-@require_permission('salary.approve_hours')
+@require_permission('page.hours_approval')
 def hours_approval():
     now = datetime.now()
     month = int(request.args.get('month', now.month))
@@ -875,7 +875,7 @@ def day_action_hourly_perm():
 
 @payroll_bp.route('/payroll/hourly_perms')
 @login_required
-@require_permission('salary.approve_hours')
+@require_permission('page.hourly_perms')
 def hourly_perms_page():
     from utils.payroll_engine import resolve_period
     from utils.settings_utils import get_salary_settings_v2
@@ -968,7 +968,7 @@ def api_hourly_perm_delete():
 
 @payroll_bp.route('/payroll/ledger')
 @login_required
-@require_permission('salary.view')
+@require_permission('page.payroll_ledger')
 def ledger_page():
     return render_template('payroll_ledger.html')
 
@@ -1080,7 +1080,7 @@ def _employee_history_data(conn, employee_id):
 
 @payroll_bp.route('/payroll/employee_history')
 @login_required
-@require_permission('salary.view')
+@require_permission('page.employee_history')
 def employee_history_page():
     from utils.payroll_engine import fetch_payroll_employees
     conn = get_db_connection()

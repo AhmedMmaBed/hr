@@ -14,7 +14,7 @@ document_bp = Blueprint('document', __name__)
 
 @document_bp.route('/documents')
 @login_required
-@require_permission('document.manage')
+@require_permission('page.documents')
 def documents():
     conn = get_db_connection()
     

@@ -7,7 +7,7 @@ shift_bp = Blueprint('shift', __name__)
 
 @shift_bp.route('/shifts')
 @login_required
-@require_permission('admin.settings')
+@require_permission('page.shift')
 def index():
     return render_template('manage_shifts.html')
 

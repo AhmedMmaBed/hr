@@ -13,12 +13,16 @@
     <h1 class="h2">{{ _('page.header.leaves') }}</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group me-2">
+            {% if has_permission('leave.settings') %}
             <a href="{{ url_for('leave_settings.index') }}" class="btn btn-outline-secondary me-2">
                 <i class="fas fa-cog me-2"></i>{{ _('btn.manage_leave_types') }}
             </a>
+            {% endif %}
+            {% if has_permission('leave.manage') %}
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addLeaveModal">
                 <i class="fas fa-plus me-2"></i>{{ _('btn.new_leave_request') }}
             </button>
+            {% endif %}
         </div>
     </div>
 </div>

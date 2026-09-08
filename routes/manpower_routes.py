@@ -25,7 +25,7 @@ ALLOWED_LOGO = {'.png', '.jpg', '.jpeg', '.svg', '.webp'}
 
 @manpower_bp.route('/reports/manpower')
 @login_required
-@require_permission('report.manpower')
+@require_permission('page.manpower')
 def index():
     conn = get_db_connection()
     contracts = list_contracts(conn, active_only=False)

@@ -15,7 +15,7 @@ employee_bp = Blueprint('employee', __name__)
 
 @employee_bp.route('/employees')
 @login_required
-@require_permission('employee.view')
+@require_permission('page.employees')
 def employees():
     # Render template immediately (Lazy Loading)
     return render_template('employees.html')
@@ -1363,13 +1363,13 @@ def add_position_api():
 
 @employee_bp.route('/structure')
 @login_required
-@require_permission('employee.view')
+@require_permission('page.manage_structure')
 def manage_structure():
     return render_template('manage_structure.html')
 
 @employee_bp.route('/org-chart')
 @login_required
-@require_permission('employee.view')
+@require_permission('page.org_chart')
 def org_chart():
     return render_template('org_chart.html')
 
@@ -1600,7 +1600,7 @@ def delete_asset():
 
 @employee_bp.route('/employees/profile')
 @login_required
-@require_permission('employee.view')
+@require_permission('page.employee_profile')
 def employee_profile():
     from utils.payroll_engine import fetch_payroll_employees
     conn = get_db_connection()

@@ -110,7 +110,7 @@ def compute_kuwait_eos(conn, employee_id, termination_date, reason,
 
 @eos_bp.route('/eos/terminate', methods=['GET', 'POST'])
 @login_required
-@require_permission('salary.calculate')
+@require_permission('page.eos')
 def terminate_employee():
     conn = get_db_connection()
     if request.method == 'POST':
@@ -204,7 +204,7 @@ def api_calculate_eos():
 
 @eos_bp.route('/eos/list')
 @login_required
-@require_permission('salary.view')
+@require_permission('page.eos')
 def list_eos():
     conn = get_db_connection()
     records = conn.execute('''

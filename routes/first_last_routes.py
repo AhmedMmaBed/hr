@@ -32,7 +32,7 @@ def _args():
 
 @fl_bp.route('/reports/first-last')
 @login_required
-@require_permission('attendance.view')
+@require_permission('page.first_last')
 def index():
     conn = get_db_connection()
     employees = [dict(r) for r in conn.execute(

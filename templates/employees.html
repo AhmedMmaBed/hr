@@ -7,12 +7,14 @@
     <h1 class="h2">{{ _('page.header.employees') }}</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group me-2">
+            {% if has_permission('employee.create') %}
             <a href="{{ url_for('employee.add_employee') }}" class="btn btn-primary">
                 <i class="fas fa-user-plus me-2"></i>{{ _('btn.add_new_employee') }}
             </a>
             <a href="{{ url_for('employee.import_employees') }}" class="btn btn-outline-success">
                 <i class="fas fa-file-excel me-2"></i>{{ _('btn.import_excel') }}
             </a>
+            {% endif %}
             {% if has_permission('employee.delete') %}
             <form action="{{ url_for('employee.delete_all_employees') }}" method="POST"
                 onsubmit="return confirmDeleteAll();">
@@ -96,8 +98,11 @@
             <i class="fas fa-users text-muted" style="font-size: 3rem;"></i>
             <h4 class="mt-3 text-muted">{{ _('msg.no_employees_found') }}</h4>
             <p class="text-muted">{{ _('msg.start_adding_employees') }}</p>
+            {% if has_permission('employee.create') %}
             <a href="{{ url_for('employee.add_employee') }}" class="btn btn-primary">
                 <i class="fas fa-user-plus me-2"></i>{{ _('btn.add_first_employee') }}
+            </a>
+            {% endif %}
             </a>
         </div>
 
@@ -109,6 +114,7 @@
 <script>
     let allEmployees = [];
     const hasDeletePermission = "{{ 'true' if has_permission('employee.delete') else 'false' }}" === 'true';
+    const hasEditPermission = "{{ 'true' if has_permission('employee.edit') else 'false' }}" === 'true';
 
     // Fetch Employees Data
     function loadEmployees() {
@@ -184,9 +190,10 @@
                     <a href="/employees/profile?employee_id=${emp.id}" class="btn btn-sm btn-outline-secondary" title="{{ _('nav.employee_profile') }}">
                         <i class="fas fa-id-card"></i>
                     </a>
+                    ${hasEditPermission ? `
                     <a href="/employees/edit/${emp.id}" class="btn btn-sm btn-outline-primary">
                         <i class="fas fa-edit"></i> {{ _('x.edit') }}
-                    </a>
+                    </a>` : ''}
                     ${hasDeletePermission ? `
                     <a href="/employees/delete/${emp.id}" 
                        class="btn btn-sm btn-outline-danger"

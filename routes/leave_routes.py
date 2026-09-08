@@ -20,7 +20,7 @@ leave_bp = Blueprint('leave', __name__)
 
 @leave_bp.route('/leaves')
 @login_required
-@require_permission('leave.view')
+@require_permission('page.leaves')
 def leaves():
     conn = get_db_connection()
     allowed_dept = get_allowed_department_name()
@@ -573,7 +573,7 @@ def my_approvals():
 
 @leave_bp.route('/leaves/balance')
 @login_required
-@require_permission('leave.view')
+@require_permission('page.leave_balance')
 def leave_balance_page():
     from utils.payroll_engine import fetch_payroll_employees
     from utils.leave_balance import compute_leave_balance

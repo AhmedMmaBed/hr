@@ -130,6 +130,8 @@ app.register_blueprint(adms_bp)
 app.register_blueprint(eos_bp)
 from routes.payroll_routes import payroll_bp
 app.register_blueprint(payroll_bp)
+from routes.contract_routes import contract_bp
+app.register_blueprint(contract_bp)
 
 # --- Internationalization (i18n) Setup ---
 from flask_babel import Babel

@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}إدارة العقود{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>نظام العقود الآلي</h2>
+        <div>
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                <i class="fas fa-file-excel"></i> رفع ملف Excel
+            </button>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#contractModal" onclick="openAddModal()">
+                <i class="fas fa-plus"></i> إضافة عقد جديد
+            </button>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="card shadow">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="contractsTable">
+                    <thead>
+                        <tr>
+                            <th>الاسم</th>
+                            <th>الرقم المدني</th>
+                            <th>الجنسية</th>
+                            <th>المهنة</th>
+                            <th>الراتب</th>
+                            <th>تاريخ البدء</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in contracts %}
+                        <tr>
+                            <td>{{ c.employee_name }}</td>
+                            <td>{{ c.civil_id }}</td>
+                            <td>{{ c.nationality }}</td>
+                            <td>{{ c.profession }}</td>
+                            <td>{{ c.salary }}</td>
+                            <td>{{ c.start_date }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-info text-white" onclick='openEditModal({{ c.id }}, {{ c|tojson|safe }})' title="تعديل">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <a href="{{ url_for('contract.generate_contract', id=c.id) }}" class="btn btn-sm btn-secondary" title="تحميل Word">
+                                    <i class="fas fa-file-word"></i> 
+                                </a>
+                                <!-- Using browser print for PDF export by opening a print view -->
+                                <button class="btn btn-sm btn-danger" onclick="printContract('{{ c.id }}')" title="طباعة / PDF">
+                                    <i class="fas fa-print"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteContract({{ c.id }})" title="حذف">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Modal -->
+<div class="modal fade" id="uploadModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form action="{{ url_for('contract.upload_excel') }}" method="POST" enctype="multipart/form-data">
+          <div class="modal-header">
+            <h5 class="modal-title">رفع بيانات الموظفين (Excel)</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <p class="text-muted small">يرجى رفع ملف Excel يحتوي على الأعمدة: الاسم, الرقم المدني, الجنسية, المهنة, الراتب, تاريخ البدء</p>
+            <input type="file" name="file" class="form-control" accept=".xlsx, .xls" required>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-success">رفع ومعالجة</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="modal fade" id="contractModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form action="{{ url_for('contract.save_contract') }}" method="POST" id="contractForm">
+          <input type="hidden" name="id" id="c_id">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalTitle">إضافة عقد جديد</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+              <div class="row">
+                  <div class="col-md-6 mb-3">
+                      <label>اسم الموظف (عربي)</label>
+                      <input type="text" name="employee_name" id="c_name" class="form-control" required>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                      <label>اسم الموظف (انجليزي)</label>
+                      <input type="text" name="employee_name_en" id="c_name_en" class="form-control">
+                  </div>
+                  <div class="col-md-6 mb-3">
+                      <label>الرقم المدني</label>
+                      <input type="text" name="civil_id" id="c_civil" class="form-control" required>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                      <label>الجنسية (عربي)</label>
+                      <input type="text" name="nationality" id="c_nationality" class="form-control">
+                  </div>
+                  <div class="col-md-6 mb-3">
+                      <label>الجنسية (انجليزي)</label>
+                      <input type="text" name="nationality_en" id="c_nationality_en" class="form-control">
+                  </div>
+                  <div class="col-md-6 mb-3">
+                      <label>المهنة (عربي)</label>
+                      <input type="text" name="profession" id="c_profession" class="form-control">
+                  </div>
+                  <div class="col-md-6 mb-3">
+                      <label>المهنة (انجليزي)</label>
+                      <input type="text" name="profession_en" id="c_profession_en" class="form-control">
+                  </div>
+                  <div class="col-md-6 mb-3">
+                      <label>الراتب</label>
+                      <input type="number" step="0.01" name="salary" id="c_salary" class="form-control">
+                  </div>
+                  <div class="col-md-6 mb-3">
+                      <label>تاريخ البدء</label>
+                      <input type="date" name="start_date" id="c_start_date" class="form-control">
+                  </div>
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">حفظ</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        if ($.fn.DataTable) {
+            $('#contractsTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Arabic.json"
+                }
+            });
+        }
+    });
+
+    function openAddModal() {
+        document.getElementById('contractForm').reset();
+        document.getElementById('c_id').value = '';
+        document.getElementById('modalTitle').innerText = 'إضافة عقد جديد';
+    }
+
+    function openEditModal(id, data) {
+        document.getElementById('c_id').value = id;
+        document.getElementById('c_name').value = data.employee_name || '';
+        document.getElementById('c_name_en').value = data.employee_name_en || '';
+        document.getElementById('c_civil').value = data.civil_id || '';
+        document.getElementById('c_nationality').value = data.nationality || '';
+        document.getElementById('c_nationality_en').value = data.nationality_en || '';
+        document.getElementById('c_profession').value = data.profession || '';
+        document.getElementById('c_profession_en').value = data.profession_en || '';
+        document.getElementById('c_salary').value = data.salary || '';
+        document.getElementById('c_start_date').value = data.start_date || '';
+        
+        document.getElementById('modalTitle').innerText = 'تعديل عقد الموظف';
+        var myModal = new bootstrap.Modal(document.getElementById('contractModal'));
+        myModal.show();
+    }
+
+    function deleteContract(id) {
+        if(confirm('هل أنت متأكد من حذف هذه البيانات؟')) {
+            fetch("{{ url_for('contract.delete_contract', id=0) }}".replace('0', id), {
+                method: 'POST'
+            }).then(res => res.json()).then(data => {
+                if(data.success) {
+                    location.reload();
+                }
+            });
+        }
+    }
+
+    function printContract(id) {
+        // Here we trigger downloading Word file and instruct user to Print to PDF, 
+        // since exact Word template formatting in browser is difficult without a complex viewer.
+        alert('للحصول على نسخة PDF وطباعة دقيقة مطابقة للتنسيق الأصلي، سيتم تحميل ملف Word. يرجى فتحه واختيار (Print to PDF).');
+        window.location.href = "{{ url_for('contract.generate_contract', id=0) }}".replace('0', id);
+    }
+</script>
+{% endblock %}

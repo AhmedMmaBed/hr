@@ -613,10 +613,10 @@
                                 {{ _('nav.home') }}
                             </a>
                         </li>
-                        {% if has_permission('employee.view') or has_permission('salary.settings') %}
+                        {% if has_permission('page.employees') or has_permission('page.manage_structure') or has_permission('page.shift') or has_permission('page.contract') %}
                         <li class="nav-section">{{ _('sec.hr') }}</li>
                         {% endif %}
-                        {% if has_permission('employee.view') %}
+                        {% if has_permission('page.employees') %}
                         <li class="nav-item">
                             <a class="nav-link {% if request.endpoint == 'employee.employees' %}active{% endif %}"
                                 href="{{ url_for('employee.employees') }}">
@@ -624,7 +624,7 @@
                                 {{ _('nav.employees') }}
                             </a>
                         </li>
-                        {% if has_permission('employee.view') %}
+                        {% if has_permission('page.employee_profile') %}
                         <li class="nav-item">
                             <a class="nav-link {% if request.endpoint == 'employee.employee_profile' %}active{% endif %}"
                                 href="{{ url_for('employee.employee_profile') }}">
@@ -634,7 +634,14 @@
                         </li>
                         {% endif %}
                         {% endif %}
-                        {% if has_permission('employee.view') %}
+                        {% if has_permission('page.contract') %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'contract.index' %}active{% endif %}"
+                                href="{{ url_for('contract.index') }}">
+                                <i class="fas fa-file-signature"></i>
+                                نظام العقود
+                            </a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link collapsed {% if request.endpoint in ['employee.manage_structure', 'employee.org_chart'] %}active{% endif %}" href="#" data-bs-toggle="collapse"
                                 data-bs-target="#structureSubmenu">
@@ -660,7 +667,7 @@
                         {% endif %}
                         {# الكشف بصلاحيته الخاصة: لا يظهر لمن لا يملكها،
                            فلا يرى مستخدمٌ رابطًا يُرفض عند فتحه. #}
-                        {% if has_permission('attendance.view') %}
+                        {% if has_permission('page.first_last') %}
                         <li class="nav-item">
                             <a class="nav-link {% if request.endpoint == 'first_last.index' %}active{% endif %}"
                                 href="{{ url_for('first_last.index') }}">
@@ -669,7 +676,7 @@
                             </a>
                         </li>
                         {% endif %}
-                        {% if has_permission('report.manpower') %}
+                        {% if has_permission('page.manpower') %}
                         <li class="nav-item">
                             <a class="nav-link {% if request.endpoint == 'manpower.index' %}active{% endif %}"
                                 href="{{ url_for('manpower.index') }}">
@@ -678,7 +685,7 @@
                             </a>
                         </li>
                         {% endif %}
-                        {% if has_permission('salary.settings') %}
+                        {% if has_permission('page.shift') %}
                         <li class="nav-item">
                             <a class="nav-link {% if request.endpoint == 'shift.index' %}active{% endif %}"
                                 href="{{ url_for('shift.index') }}">
@@ -687,7 +694,7 @@
                             </a>
                         </li>
                         {% endif %}
-                        {% if has_permission('employee.view') %}
+                        {% if has_permission('page.eos') %}
                         <li class="nav-item">
                             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
                                 data-bs-target="#eosSubmenu">
@@ -711,10 +718,10 @@
                             </div>
                         </li>
                         {% endif %}
-                        {% if has_permission('attendance.view') or has_permission('leave.view') or has_permission('leave.manage') or has_permission('leave.settings') or has_permission('salary.approve_hours') %}
+                        {% if has_permission('page.attendance') or has_permission('page.oracle_control') %}
                         <li class="nav-section">{{ _('sec.att') }}</li>
                         {% endif %}
-                        {% if has_permission('attendance.view') %}
+                        {% if has_permission('page.attendance') %}
                         <li class="nav-item">
                             <a class="nav-link {% if request.endpoint == 'attendance.fingerprint' %}active{% endif %}"
                                 href="{{ url_for('attendance.fingerprint') }}">
@@ -723,7 +730,7 @@
                             </a>
                         </li>
                         {% endif %}
-                        {% if has_permission('attendance.view') %}
+                        {% if has_permission('page.oracle_control') %}
                         <li class="nav-item">
                             <a class="nav-link {% if request.endpoint == 'attendance.oracle_control' %}active{% endif %}"
                                 href="{{ url_for('attendance.oracle_control') }}">
@@ -789,7 +796,7 @@
                             </div>
                         </li>
                         {% endif %}
-                        {% if has_permission('leave.view') %}
+                        {% if has_permission('page.leave_balance') %}
                         <li class="nav-item">
                             <a class="nav-link {% if request.endpoint == 'leave.leave_balance_page' %}active{% endif %}"
                                 href="{{ url_for('leave.leave_balance_page') }}">
@@ -798,7 +805,7 @@
                             </a>
                         </li>
                         {% endif %}
-                        {% if has_permission('salary.approve_hours') %}
+                        {% if has_permission('page.hourly_perms') %}
                         <li class="nav-item">
                             <a class="nav-link {% if request.endpoint == 'payroll.hourly_perms_page' %}active{% endif %}"
                                 href="{{ url_for('payroll.hourly_perms_page') }}">
@@ -807,10 +814,10 @@
                             </a>
                         </li>
                         {% endif %}
-                        {% if has_permission('salary.view') or has_permission('salary.calculate') or has_permission('salary.approve_hours') %}
+                        {% if has_permission('page.payroll_monthly') or has_permission('page.hours_approval') or has_permission('page.salaries') %}
                         <li class="nav-section">{{ _('sec.pay') }}</li>
                         {% endif %}
-                        {% if has_permission('salary.approve_hours') %}
+                        {% if has_permission('page.hours_approval') %}
                         <li class="nav-item">
                             <a class="nav-link {% if request.endpoint == 'payroll.hours_approval' %}active{% endif %}"
                                 href="{{ url_for('payroll.hours_approval') }}">
@@ -819,7 +826,7 @@
                             </a>
                         </li>
                         {% endif %}
-                        {% if has_permission('salary.calculate') %}
+                        {% if has_permission('page.payroll_monthly') %}
                         <li class="nav-item">
                             <a class="nav-link {% if request.endpoint == 'payroll.monthly_sheet' %}active{% endif %}"
                                 href="{{ url_for('payroll.monthly_sheet') }}">
@@ -828,7 +835,7 @@
                             </a>
                         </li>
                         {% endif %}
-                        {% if has_permission('salary.view') %}
+                        {% if has_permission('page.payroll_ledger') %}
                         <li class="nav-item">
                             <a class="nav-link {% if request.endpoint == 'payroll.ledger_page' %}active{% endif %}"
                                 href="{{ url_for('payroll.ledger_page') }}">
@@ -837,7 +844,7 @@
                             </a>
                         </li>
                         {% endif %}
-                        {% if has_permission('salary.view') %}
+                        {% if has_permission('page.employee_history') %}
                         <li class="nav-item">
                             <a class="nav-link {% if request.endpoint == 'payroll.employee_history_page' %}active{% endif %}"
                                 href="{{ url_for('payroll.employee_history_page') }}">
@@ -846,7 +853,7 @@
                             </a>
                         </li>
                         {% endif %}
-                        {% if has_permission('salary.calculate') %}
+                        {% if has_permission('page.payroll_transactions') %}
                         <li class="nav-item">
                             <a class="nav-link {% if request.endpoint == 'payroll.transactions' %}active{% endif %}"
                                 href="{{ url_for('payroll.transactions') }}">
@@ -855,7 +862,7 @@
                             </a>
                         </li>
                         {% endif %}
-                        {% if has_permission('salary.view') %}
+                        {% if has_permission('page.loans') %}
                         <li class="nav-item">
                             <a class="nav-link {% if request.endpoint == 'payroll.loans' %}active{% endif %}"
                                 href="{{ url_for('payroll.loans') }}">
@@ -864,7 +871,7 @@
                             </a>
                         </li>
                         {% endif %}
-                        {% if has_permission('salary.view') %}
+                        {% if has_permission('page.salaries') %}
                         <li class="nav-item">
                             <a class="nav-link {% if request.endpoint == 'salary.salaries' %}active{% endif %}"
                                 href="{{ url_for('salary.salaries') }}">
@@ -873,10 +880,10 @@
                             </a>
                         </li>
                         {% endif %}
-                        {% if has_permission('report.view') or has_permission('attendance.view') or has_permission('employee.documents') %}
+                        {% if has_permission('page.reports') or has_permission('page.attendance') or has_permission('page.documents') %}
                         <li class="nav-section">{{ _('sec.rep') }}</li>
                         {% endif %}
-                        {% if has_permission('report.view') or has_permission('attendance.view') %}
+                        {% if has_permission('page.reports') or has_permission('page.custom_reports') %}
                         <li class="nav-item">
                             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
                                 data-bs-target="#reportSubmenu">
@@ -886,7 +893,7 @@
                             </a>
                             <div class="collapse" id="reportSubmenu">
                                 <ul class="nav flex-column ms-3 bg-light rounded m-2">
-                                    {% if has_permission('report.view') %}
+                                    {% if has_permission('page.reports') %}
                                     <li class="nav-item">
                                         <a class="nav-link py-2 text-dark" href="{{ url_for('report.reports') }}">
                                             <i class="fas fa-chart-bar small me-2"></i>{{ _('nav.reports_general') if
@@ -894,7 +901,7 @@
                                         </a>
                                     </li>
                                     {% endif %}
-                                    {% if has_permission('attendance.view') %}
+                                    {% if has_permission('page.custom_reports') %}
                                     <li class="nav-item">
                                         <a class="nav-link py-2 text-dark"
                                             href="{{ url_for('report.presence_daily_report') }}">
@@ -930,7 +937,7 @@
                             </div>
                         </li>
                         {% endif %}
-                        {% if has_permission('employee.documents') %}
+                        {% if has_permission('page.documents') %}
                         <li class="nav-item">
                             <a class="nav-link {% if request.endpoint == 'document.documents' %}active{% endif %}"
                                 href="{{ url_for('document.documents') }}">
@@ -942,10 +949,10 @@
                             </a>
                         </li>
                         {% endif %}
-                        {% if has_permission('admin.roles') or has_permission('admin.users') or has_permission('admin.settings') or session.role == 'Admin' %}
+                        {% if has_permission('page.roles') or has_permission('page.users') or has_permission('page.settings') %}
                         <li class="nav-section">{{ _('sec.sys') }}</li>
                         {% endif %}
-                        {% if has_permission('admin.roles') or has_permission('admin.users') %}
+                        {% if has_permission('page.roles') or has_permission('page.users') %}
                         <li class="nav-item">
                             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
                                 data-bs-target="#adminSubmenu">
@@ -955,14 +962,14 @@
                             </a>
                             <div class="collapse" id="adminSubmenu">
                                 <ul class="nav flex-column ms-3 bg-light rounded m-2">
-                                    {% if has_permission('admin.roles') %}
+                                    {% if has_permission('page.roles') %}
                                     <li class="nav-item">
                                         <a class="nav-link py-2 text-dark" href="{{ url_for('admin.roles_list') }}">
                                             <i class="fas fa-id-card small me-2"></i>{{ _('nav.roles') }}
                                         </a>
                                     </li>
                                     {% endif %}
-                                    {% if has_permission('admin.users') %}
+                                    {% if has_permission('page.users') %}
                                     <li class="nav-item">
                                         <a class="nav-link py-2 text-dark" href="{{ url_for('admin.users_list') }}">
                                             <i class="fas fa-users-cog small me-2"></i>{{ _('nav.users') }}
@@ -973,7 +980,7 @@
                             </div>
                         </li>
                         {% endif %}
-                        {% if has_permission('admin.settings') %}
+                        {% if has_permission('page.settings') %}
                         <li class="nav-item">
                             <a class="nav-link {% if request.endpoint == 'main.settings' %}active{% endif %}"
                                 href="{{ url_for('main.settings') }}">
@@ -982,7 +989,7 @@
                             </a>
                         </li>
                         {% endif %}
-                        {% if has_permission('admin.settings') or session.role == 'Admin' %}
+                        {% if has_permission('page.translations') %}
                         <li class="nav-item">
                             <a class="nav-link {% if request.endpoint == 'translation.index' %}active{% endif %}"
                                 href="{{ url_for('translation.index') }}">

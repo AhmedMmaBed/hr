@@ -15,7 +15,7 @@ salary_bp = Blueprint('salary', __name__)
 
 @salary_bp.route('/salaries')
 @login_required
-@require_permission('salary.view')
+@require_permission('page.salaries')
 def salaries():
     """Retired. This screen wrote hand-entered salaries into the legacy
     `salaries` table, which the payroll engine and the ledger never read —

@@ -8,7 +8,7 @@ leave_settings_bp = Blueprint('leave_settings', __name__)
 
 @leave_settings_bp.route('/leave_settings')
 @login_required
-@require_permission('leave.settings')
+@require_permission('page.contract')
 def index():
     conn = get_db_connection()
     leave_types = conn.execute("SELECT * FROM leave_types ORDER BY id").fetchall()

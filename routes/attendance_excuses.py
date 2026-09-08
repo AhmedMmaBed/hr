@@ -9,7 +9,7 @@ attendance_excuses_bp = Blueprint('attendance_excuses', __name__)
 
 @attendance_excuses_bp.route('/attendance_excuses')
 @login_required
-@require_permission('attendance.view')
+@require_permission('page.contract')
 def index():
     conn = get_db_connection()
     

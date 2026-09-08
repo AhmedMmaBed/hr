@@ -21,7 +21,7 @@ attendance_bp = Blueprint('attendance', __name__)
 
 @attendance_bp.route('/fingerprint')
 @login_required
-@require_permission('attendance.view')
+@require_permission('page.attendance')
 def fingerprint():
     """صفحة إدارة نظام البصمة"""
     try:
@@ -660,7 +660,7 @@ def manage_device_limit():
 
 @attendance_bp.route('/attendance/oracle')
 @login_required
-@require_permission('attendance.view')
+@require_permission('page.oracle_control')
 def oracle_control():
     """مركز التحكم في تكامل أوراكل"""
     import os as _os
@@ -838,7 +838,8 @@ def sync_missing_to_oracle():
 @login_required
 @require_permission('attendance.edit')
 def oracle_retry():
-    """Trigger manual retry of pending records"""
+    """Trigger manual retry of pending records"""
+
     from utils.oracle_db import is_oracle_enabled
     if not is_oracle_enabled():
         return jsonify({'success': False, 'message': gettext('x.oracle_is_disabled')})

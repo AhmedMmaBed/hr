@@ -60,7 +60,7 @@ def index():
 
 @main_bp.route('/settings')
 @login_required
-@require_permission('admin.settings')
+@require_permission('page.settings')
 def settings():
     from utils.settings_utils import get_salary_settings_v2
     settings_data = get_system_settings() or {}

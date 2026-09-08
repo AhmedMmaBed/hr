@@ -14,7 +14,7 @@ report_bp = Blueprint('report', __name__)
 
 @report_bp.route('/reports')
 @login_required
-@require_permission('report.view')
+@require_permission('page.reports')
 def reports():
     return render_template('general_reports.html')
 

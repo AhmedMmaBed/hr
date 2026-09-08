@@ -15,7 +15,7 @@ def get_po_file_path(lang_code):
 
 @translation_bp.route('/')
 @login_required
-@require_permission('admin.settings')
+@require_permission('page.translations')
 def index():
     return render_template('translation_manager.html')
 

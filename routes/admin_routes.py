@@ -65,7 +65,7 @@ def admin_cleanup():
 
 @admin_bp.route('/admin/roles')
 @login_required
-@require_permission('admin.roles')
+@require_permission('page.roles')
 def roles_list():
     conn = get_db_connection()
     roles = conn.execute('SELECT * FROM roles ORDER BY id').fetchall()
@@ -166,7 +166,7 @@ def role_permissions(role_id):
 
 @admin_bp.route('/admin/users')
 @login_required
-@require_permission('admin.users')
+@require_permission('page.users')
 def users_list():
     conn = get_db_connection()
     fetched_users = conn.execute('''

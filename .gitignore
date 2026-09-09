@@ -59,6 +59,10 @@ fingerprint_sync.log
 # Usually we don't commit DBs with data.
 *.db
 *.sqlite3
+**/*.db
+**/*.sqlite3
+data/
+data/*
 
 # OS specific
 .DS_Store

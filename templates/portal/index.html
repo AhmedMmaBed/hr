@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>بوابة الموظف | HR Portal</title>
+    
+    <!-- PWA Settings -->
+    <link rel="manifest" href="/static/portal/manifest.json">
+    <meta name="theme-color" content="#F2F2F7">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="بوابة الموظف">
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --ios-bg: #F2F2F7;
+            --ios-card: rgba(255, 255, 255, 0.88);
+            --ios-card-solid: #FFFFFF;
+            --ios-border: rgba(0, 0, 0, 0.06);
+            --ios-text: #1C1C1E;
+            --ios-subtext: #8E8E93;
+            --ios-blue: #007AFF;
+            --ios-green: #34C759;
+            --ios-red: #FF3B30;
+            --ios-orange: #FF9500;
+            --ios-purple: #AF52DE;
+            --ios-indigo: #5856D6;
+            --ios-tab-bar: rgba(255, 255, 255, 0.85);
+            --ios-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            --ios-shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.08);
+            --safe-bottom: env(safe-area-inset-bottom, 20px);
+            --safe-top: env(safe-area-inset-top, 20px);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, "Plus Jakarta Sans", "Tajawal", sans-serif;
+        }
+
+        body {
+            background-color: var(--ios-bg);
+            color: var(--ios-text);
+            min-height: 100vh;
+            padding-bottom: calc(90px + var(--safe-bottom));
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Top Bar / App Store Today Header */
+        .ios-topbar {
+            padding: calc(16px + var(--safe-top)) 20px 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: sticky;
+            top: 0;
+            background: rgba(242, 242, 247, 0.85);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            z-index: 100;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        .ios-date-badge {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--ios-subtext);
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .ios-page-title {
+            font-size: 2.1rem;
+            font-weight: 900;
+            color: var(--ios-text);
+            line-height: 1.1;
+        }
+
+        .ios-avatar-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--ios-blue), var(--ios-indigo));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+            border: 2px solid white;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .ios-avatar-btn:active {
+            transform: scale(0.92);
+        }
+
+        /* Container */
+        .ios-content {
+            padding: 16px 20px;
+            max-width: 540px;
+            margin: 0 auto;
+        }
+
+        /* App Store Style Large Hero Card */
+        .hero-card {
+            background: var(--ios-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: var(--ios-shadow-lg);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .hero-card::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(52, 199, 89, 0.25) 0%, rgba(52, 199, 89, 0) 70%);
+            pointer-events: none;
+        }
+
+        .hero-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .hero-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--ios-subtext);
+        }
+
+        .pill-status {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pill-status.present {
+            background: rgba(52, 199, 89, 0.15);
+            color: #28a745;
+        }
+
+        .pill-status.absent {
+            background: rgba(255, 59, 48, 0.12);
+            color: var(--ios-red);
+        }
+
+        .pill-status.manager {
+            background: rgba(88, 86, 214, 0.15);
+            color: var(--ios-indigo);
+        }
+
+        .hero-time-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            text-align: center;
+            margin: 16px 0 20px 0;
+            padding: 16px 0;
+            background: rgba(242, 242, 247, 0.6);
+            border-radius: 18px;
+        }
+
+        .hero-time-item h3 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--ios-text);
+            margin-bottom: 4px;
+        }
+
+        .hero-time-item p {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--ios-subtext);
+        }
+
+        .time-divider {
+            width: 1px;
+            height: 36px;
+            background: rgba(0, 0, 0, 0.08);
+        }
+
+        /* Action Buttons Grid */
+        .action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .action-card {
+            background: var(--ios-card-solid);
+            border-radius: 20px;
+            padding: 18px 16px;
+            box-shadow: var(--ios-shadow);
+            border: 1px solid var(--ios-border);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .action-card:active {
+            transform: scale(0.96);
+        }
+
+        .action-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+        }
+
+        .icon-leave { background: rgba(0, 122, 255, 0.12); color: var(--ios-blue); }
+        .icon-excuse { background: rgba(255, 149, 0, 0.12); color: var(--ios-orange); }
+        .icon-team { background: rgba(88, 86, 214, 0.12); color: var(--ios-indigo); }
+        .icon-salary { background: rgba(52, 199, 89, 0.12); color: var(--ios-green); }
+
+        .action-card h4 {
+            font-size: 1rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .action-card p {
+            font-size: 0.75rem;
+            color: var(--ios-subtext);
+            font-weight: 600;
+        }
+
+        /* KPI Cards */
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .kpi-box {
+            background: var(--ios-card-solid);
+            border-radius: 18px;
+            padding: 14px 10px;
+            text-align: center;
+            box-shadow: var(--ios-shadow);
+            border: 1px solid var(--ios-border);
+        }
+
+        .kpi-val {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--ios-text);
+            margin-bottom: 2px;
+        }
+
+        .kpi-title {
+            font-size: 0.72rem;
+            color: var(--ios-subtext);
+            font-weight: 700;
+        }
+
+        /* Section Titles */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0 12px 0;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--ios-text);
+        }
+
+        .section-link {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--ios-blue);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Modern List Cards */
+        .list-card {
+            background: var(--ios-card-solid);
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: var(--ios-shadow);
+            border: 1px solid var(--ios-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .list-info h5 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .list-info p {
+            font-size: 0.78rem;
+            color: var(--ios-subtext);
+            font-weight: 600;
+        }
+
+        .badge-tag {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 12px;
+        }
+
+        .badge-tag.approved { background: rgba(52, 199, 89, 0.12); color: var(--ios-green); }
+        .badge-tag.pending { background: rgba(255, 149, 0, 0.12); color: var(--ios-orange); }
+        .badge-tag.rejected { background: rgba(255, 59, 48, 0.12); color: var(--ios-red); }
+
+        /* Direct Manager Team Cards */
+        .team-member-card {
+            background: var(--ios-card-solid);
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: var(--ios-shadow);
+            border: 1px solid var(--ios-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .team-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: rgba(88, 86, 214, 0.12);
+            color: var(--ios-indigo);
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            margin-left: 12px;
+        }
+
+        .approval-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-approve {
+            background: var(--ios-green);
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+
+        .btn-reject {
+            background: rgba(255, 59, 48, 0.1);
+            color: var(--ios-red);
+            border: none;
+            padding: 8px 14px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+
+        .btn-approve:active, .btn-reject:active {
+            transform: scale(0.92);
+        }
+
+        /* iOS Bottom Tab Bar (Frosted Glass) */
+        .ios-tabbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--ios-tab-bar);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 10px calc(8px + var(--safe-bottom)) 10px;
+            z-index: 1000;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.03);
+        }
+
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--ios-subtext);
+            text-decoration: none;
+            font-size: 0.68rem;
+            font-weight: 700;
+            gap: 4px;
+            cursor: pointer;
+            transition: color 0.2s ease, transform 0.15s ease;
+            position: relative;
+            flex: 1;
+        }
+
+        .tab-item i {
+            font-size: 1.35rem;
+            transition: transform 0.2s ease;
+        }
+
+        .tab-item.active {
+            color: var(--ios-blue);
+        }
+
+        .tab-item.active i {
+            transform: scale(1.1);
+        }
+
+        .tab-badge {
+            position: absolute;
+            top: -3px;
+            left: 50%;
+            margin-left: 6px;
+            background: var(--ios-red);
+            color: white;
+            font-size: 0.6rem;
+            font-weight: 800;
+            padding: 1px 6px;
+            border-radius: 10px;
+            border: 2px solid white;
+        }
+
+        /* Views Switching */
+        .portal-view {
+            display: none;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .portal-view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Modal Sheets (iOS Action Sheet style) */
+        .ios-sheet-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 2000;
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .ios-sheet {
+            background: white;
+            width: 100%;
+            max-width: 540px;
+            border-radius: 28px 28px 0 0;
+            padding: 24px 20px calc(24px + var(--safe-bottom)) 20px;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+            animation: slideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .sheet-handle {
+            width: 40px;
+            height: 5px;
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+            margin: 0 auto 18px auto;
+        }
+
+        .sheet-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--ios-subtext);
+            margin-bottom: 6px;
+        }
+
+        .form-control-ios {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            background: #F8F8FA;
+            font-size: 0.95rem;
+            font-weight: 600;
+            outline: none;
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .form-control-ios:focus {
+            border-color: var(--ios-blue);
+            background: white;
+        }
+
+        .btn-ios-submit {
+            width: 100%;
+            padding: 15px;
+            border-radius: 16px;
+            background: var(--ios-blue);
+            color: white;
+            font-size: 1.05rem;
+            font-weight: 800;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 4px 16px rgba(0, 122, 255, 0.28);
+            transition: transform 0.15s ease;
+        }
+
+        .btn-ios-submit:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navigation -->
+    <header class="ios-topbar">
+        <div>
+            <div class="ios-date-badge">{{ today_display }}</div>
+            <h1 class="ios-page-title" id="pageHeaderTitle">اليوم</h1>
+        </div>
+        <div class="ios-avatar-btn" onclick="switchTab('tab-profile')" title="حسابي">
+            {{ (employee.name[0] if employee and employee.name else 'M') | upper }}
+        </div>
+    </header>
+
+    <main class="ios-content">
+
+        <!-- ============================================================== -->
+        <!-- VIEW 1: TODAY / HOME                                           -->
+        <!-- ============================================================== -->
+        <section id="view-today" class="portal-view active">
+            
+            <!-- Hero Attendance Card -->
+            <div class="hero-card">
+                <div class="hero-header">
+                    <div>
+                        <div class="hero-label">حالة الدوام الحالية</div>
+                        <h3 style="font-weight: 800; font-size: 1.35rem; margin-top: 2px;" id="heroEmpName">
+                            {{ employee.name or 'الموظف' }}
+                        </h3>
+                    </div>
+                    <span class="pill-status present" id="todayStatusBadge">
+                        <i class="fas fa-circle" style="font-size: 0.55rem;"></i>
+                        <span id="todayStatusText">جاري التحميل...</span>
+                    </span>
+                </div>
+
+                <div class="hero-time-row">
+                    <div class="hero-time-item">
+                        <h3 id="heroCheckIn">--:--</h3>
+                        <p>بصمة الحضور</p>
+                    </div>
+                    <div class="time-divider"></div>
+                    <div class="hero-time-item">
+                        <h3 id="heroCheckOut">--:--</h3>
+                        <p>بصمة الانصراف</p>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <small style="color: var(--ios-subtext); font-weight: 600;">
+                        <i class="fas fa-fingerprint me-1 text-primary"></i> <span id="heroPunchesCount">0</span> حركات مسجلة اليوم
+                    </small>
+                    <small style="color: var(--ios-subtext); font-weight: 600;">
+                        {{ employee.position_name or employee.position or 'موظف' }}
+                    </small>
+                </div>
+            </div>
+
+            <!-- Quick Action Cards Grid -->
+            <div class="action-grid">
+                <div class="action-card" onclick="openLeaveModal()">
+                    <div class="action-icon icon-leave">
+                        <i class="fas fa-calendar-plus"></i>
+                    </div>
+                    <h4>طلب إجازة</h4>
+                    <p>سنوية / طارئة / مرضية</p>
+                </div>
+
+                <div class="action-card" onclick="openExcuseModal()">
+                    <div class="action-icon icon-excuse">
+                        <i class="fas fa-stopwatch"></i>
+                    </div>
+                    <h4>طلب استئذان</h4>
+                    <p>ساعي أو مهمة خارجية</p>
+                </div>
+            </div>
+
+            <!-- Quick KPI Stats -->
+            <div class="kpi-row">
+                <div class="kpi-box">
+                    <div class="kpi-val" id="kpiLeaveBal">--</div>
+                    <div class="kpi-title">رصيد الإجازات</div>
+                </div>
+                <div class="kpi-box">
+                    <div class="kpi-val" id="kpiWorkedDays">--</div>
+                    <div class="kpi-title">أيام الحضور</div>
+                </div>
+                <div class="kpi-box">
+                    <div class="kpi-val" id="kpiLoans">--</div>
+                    <div class="kpi-title">سلف قائمة</div>
+                </div>
+            </div>
+
+            <!-- Recent Leave Requests -->
+            <div class="section-header">
+                <h3 class="section-title">آخر الطلبات</h3>
+                <span class="section-link" onclick="switchTab('tab-leaves')">عرض الكل</span>
+            </div>
+            <div id="todayRecentRequests">
+                <div style="text-align: center; color: var(--ios-subtext); padding: 20px;">
+                    <i class="fas fa-spinner fa-spin me-2"></i> جاري تحميل الطلبات...
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- VIEW 2: MY TEAM & DIRECT MANAGER (Conditional)                 -->
+        <!-- ============================================================== -->
+        {% if is_manager %}
+        <section id="view-team" class="portal-view">
+            <div class="hero-card" style="background: linear-gradient(135deg, rgba(88, 86, 214, 0.08), rgba(255, 255, 255, 0.95));">
+                <div class="hero-header">
+                    <div>
+                        <div class="hero-label">إدارة الفريق المباشر</div>
+                        <h3 style="font-weight: 800; font-size: 1.35rem;">لوحة المدير المباشر</h3>
+                    </div>
+                    <span class="pill-status manager">
+                        <i class="fas fa-user-tie me-1"></i> مدير مباشر
+                    </span>
+                </div>
+                <div class="hero-time-row" style="background: rgba(255, 255, 255, 0.8);">
+                    <div class="hero-time-item">
+                        <h3 id="teamTotalCount">0</h3>
+                        <p>إجمالي الفريق</p>
+                    </div>
+                    <div class="time-divider"></div>
+                    <div class="hero-time-item">
+                        <h3 id="teamPresentCount" style="color: var(--ios-green);">0</h3>
+                        <p>حاضر اليوم</p>
+                    </div>
+                    <div class="time-divider"></div>
+                    <div class="hero-time-item">
+                        <h3 id="teamPendingCount" style="color: var(--ios-orange);">0</h3>
+                        <p>طلبات معلقة</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subordinates Pending Approvals -->
+            <div class="section-header">
+                <h3 class="section-title">طلبات تنتظر اعتمادك</h3>
+            </div>
+            <div id="teamApprovalsContainer">
+                <div style="text-align: center; color: var(--ios-subtext); padding: 20px;">
+                    <i class="fas fa-spinner fa-spin me-2"></i> جاري فحص الطلبات...
+                </div>
+            </div>
+
+            <!-- Team Members Live Status -->
+            <div class="section-header" style="margin-top: 24px;">
+                <h3 class="section-title">حالة حضور أفراد الفريق اليوم</h3>
+            </div>
+            <div id="teamMembersListContainer">
+                <div style="text-align: center; color: var(--ios-subtext); padding: 20px;">
+                    جاري تحميل الفريق...
+                </div>
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- ============================================================== -->
+        <!-- VIEW 3: ATTENDANCE LOG                                         -->
+        <!-- ============================================================== -->
+        <section id="view-attendance" class="portal-view">
+            <div class="section-header">
+                <h3 class="section-title">سجل الحضور والانصراف</h3>
+                <span class="badge-tag approved" id="attMonthBadge">هذا الشهر</span>
+            </div>
+            <div id="attendanceListContainer">
+                <div style="text-align: center; color: var(--ios-subtext); padding: 30px;">
+                    <i class="fas fa-spinner fa-spin me-2"></i> جاري تحميل السجل...
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- VIEW 4: LEAVES & REQUESTS                                      -->
+        <!-- ============================================================== -->
+        <section id="view-leaves" class="portal-view">
+            <div class="hero-card">
+                <div class="hero-header">
+                    <div>
+                        <div class="hero-label">رصيد الإجازات السنوية</div>
+                        <h2 style="font-weight: 900; font-size: 2.2rem; color: var(--ios-blue);" id="leavesMainBalance">
+                            -- <span style="font-size: 1rem; font-weight: 700; color: var(--ios-subtext);">يوم متبقي</span>
+                        </h2>
+                    </div>
+                    <button class="btn-approve" onclick="openLeaveModal()" style="padding: 10px 18px;">
+                        <i class="fas fa-plus me-1"></i> طلب جديد
+                    </button>
+                </div>
+                <div style="display: flex; gap: 12px; margin-top: 10px;">
+                    <div style="flex: 1; background: #F8F8FA; padding: 12px; border-radius: 14px; text-align: center;">
+                        <div style="font-weight: 800; font-size: 1.1rem;" id="leaveAccrued">--</div>
+                        <small style="color: var(--ios-subtext); font-weight: 600;">المستحق</small>
+                    </div>
+                    <div style="flex: 1; background: #F8F8FA; padding: 12px; border-radius: 14px; text-align: center;">
+                        <div style="font-weight: 800; font-size: 1.1rem; color: var(--ios-orange);" id="leaveTaken">--</div>
+                        <small style="color: var(--ios-subtext); font-weight: 600;">المستهلك</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <h3 class="section-title">تاريخ جميع الطلبات</h3>
+            </div>
+            <div id="allLeavesListContainer">
+                <!-- Dynamically filled -->
+            </div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- VIEW 5: PROFILE & SALARY                                       -->
+        <!-- ============================================================== -->
+        <section id="view-profile" class="portal-view">
+            <!-- Profile Card -->
+            <div class="hero-card" style="text-align: center;">
+                <div style="width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, var(--ios-blue), var(--ios-indigo)); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: 800; margin: 0 auto 14px auto; box-shadow: 0 6px 20px rgba(0, 122, 255, 0.3);">
+                    {{ (employee.name[0] if employee and employee.name else 'M') | upper }}
+                </div>
+                <h3 style="font-weight: 800; font-size: 1.4rem; margin-bottom: 4px;">{{ employee.name or 'موظف' }}</h3>
+                <p style="color: var(--ios-subtext); font-weight: 600; font-size: 0.9rem;">
+                    {{ employee.position_name or employee.position or 'موظف' }} • {{ employee.department_name or employee.department or 'عام' }}
+                </p>
+                <span class="pill-status present" style="margin-top: 10px;">
+                    رقم الموظف: {{ employee.employee_number or '-' }}
+                </span>
+            </div>
+
+            <!-- Details Section -->
+            <div class="section-header">
+                <h3 class="section-title">البيانات الوظيفية والمالية</h3>
+            </div>
+            <div class="list-card">
+                <div class="list-info">
+                    <h5>الراتب الأساسي</h5>
+                    <p>المعتمد في العقد</p>
+                </div>
+                <div style="font-weight: 800; font-size: 1.15rem; color: var(--ios-green);" id="profileSalary">
+                    {{ employee.salary or 0 }} ر.س
+                </div>
+            </div>
+            <div class="list-card">
+                <div class="list-info">
+                    <h5>المدير المباشر</h5>
+                    <p>مسؤول الاعتماد</p>
+                </div>
+                <div style="font-weight: 700; color: var(--ios-text);">
+                    {{ employee.manager_name or 'إدارة الموارد البشرية' }}
+                </div>
+            </div>
+            <div class="list-card">
+                <div class="list-info">
+                    <h5>تاريخ التعيين</h5>
+                    <p>بداية الخدمة</p>
+                </div>
+                <div style="font-weight: 700; color: var(--ios-text);">
+                    {{ employee.hire_date or '-' }}
+                </div>
+            </div>
+
+            <!-- Logout Button -->
+            <a href="{{ url_for('auth.logout') }}" style="text-decoration: none;">
+                <button class="btn-ios-submit" style="background: rgba(255, 59, 48, 0.1); color: var(--ios-red); box-shadow: none; margin-top: 24px;">
+                    <i class="fas fa-arrow-right-from-bracket me-2"></i> تسجيل الخروج
+                </button>
+            </a>
+        </section>
+
+    </main>
+
+    <!-- ============================================================== -->
+    <!-- MODAL 1: REQUEST LEAVE                                         -->
+    <!-- ============================================================== -->
+    <div class="ios-sheet-overlay" id="leaveModalOverlay" onclick="closeModals(event)">
+        <div class="ios-sheet" onclick="event.stopPropagation()">
+            <div class="sheet-handle"></div>
+            <h3 class="sheet-title">تقديم طلب إجازة جديدة 🏖️</h3>
+            
+            <form id="leaveForm" onsubmit="submitLeave(event)">
+                <div class="form-group">
+                    <label>نوع الإجازة</label>
+                    <select class="form-control-ios" name="leave_type_id" required id="leaveTypeSelect">
+                        {% for lt in leave_types %}
+                        <option value="{{ lt.id }}">{{ lt.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group">
+                        <label>من تاريخ</label>
+                        <input type="date" class="form-control-ios" name="start_date" required id="leaveStartDate" value="{{ today_date }}">
+                    </div>
+                    <div class="form-group">
+                        <label>إلى تاريخ</label>
+                        <input type="date" class="form-control-ios" name="end_date" required id="leaveEndDate" value="{{ today_date }}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>السبب / ملاحظات (اختياري)</label>
+                    <textarea class="form-control-ios" name="reason" rows="2" placeholder="اكتب سبب طلب الإجازة..."></textarea>
+                </div>
+                <button type="submit" class="btn-ios-submit" id="submitLeaveBtn">إرسال الطلب</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- MODAL 2: REQUEST EXCUSE                                        -->
+    <!-- ============================================================== -->
+    <div class="ios-sheet-overlay" id="excuseModalOverlay" onclick="closeModals(event)">
+        <div class="ios-sheet" onclick="event.stopPropagation()">
+            <div class="sheet-handle"></div>
+            <h3 class="sheet-title">طلب استئذان / مهمة عمل ⏱️</h3>
+            
+            <form id="excuseForm" onsubmit="submitExcuse(event)">
+                <div class="form-group">
+                    <label>نوع الطلب</label>
+                    <select class="form-control-ios" name="type" required>
+                        <option value="mission">مهمة عمل خارجية</option>
+                        <option value="personal">استئذان شخصي</option>
+                        <option value="manual_override">تصحيح بصمة</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>التاريخ</label>
+                    <input type="date" class="form-control-ios" name="date" required value="{{ today_date }}">
+                </div>
+                <div class="form-group">
+                    <label>السبب</label>
+                    <textarea class="form-control-ios" name="reason" rows="2" placeholder="يرجى توضيح سبب الاستئذان..." required></textarea>
+                </div>
+                <button type="submit" class="btn-ios-submit" id="submitExcuseBtn">إرسال الطلب</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- IOS BOTTOM TAB BAR                                             -->
+    <!-- ============================================================== -->
+    <nav class="ios-tabbar">
+        <div class="tab-item active" onclick="switchTab('tab-today')" id="btn-tab-today">
+            <i class="fas fa-calendar-day"></i>
+            <span>اليوم</span>
+        </div>
+        
+        {% if is_manager %}
+        <div class="tab-item" onclick="switchTab('tab-team')" id="btn-tab-team">
+            <i class="fas fa-users-gear"></i>
+            <span>فريق العمل</span>
+            <span class="tab-badge" id="teamTabBadge" style="display: none;">0</span>
+        </div>
+        {% endif %}
+
+        <div class="tab-item" onclick="switchTab('tab-attendance')" id="btn-tab-attendance">
+            <i class="fas fa-clock-rotate-left"></i>
+            <span>الحضور</span>
+        </div>
+        
+        <div class="tab-item" onclick="switchTab('tab-leaves')" id="btn-tab-leaves">
+            <i class="fas fa-umbrella-beach"></i>
+            <span>الإجازات</span>
+        </div>
+        
+        <div class="tab-item" onclick="switchTab('tab-profile')" id="btn-tab-profile">
+            <i class="fas fa-user-circle"></i>
+            <span>حسابي</span>
+        </div>
+    </nav>
+
+    <script>
+        // Tab switching logic
+        const TITLES = {
+            'tab-today': 'اليوم',
+            'tab-team': 'فريق العمل',
+            'tab-attendance': 'سجل الحضور',
+            'tab-leaves': 'الإجازات',
+            'tab-profile': 'حسابي'
+        };
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-item').forEach(b => b.classList.remove('active'));
+            const btn = document.getElementById('btn-' + tabId);
+            if (btn) btn.classList.add('active');
+
+            document.querySelectorAll('.portal-view').forEach(v => v.classList.remove('active'));
+            const viewKey = tabId.replace('tab-', '');
+            const targetView = document.getElementById('view-' + viewKey);
+            if (targetView) targetView.classList.add('active');
+
+            document.getElementById('pageHeaderTitle').textContent = TITLES[tabId] || 'البوابة';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Specific refresh on tab switch
+            if (tabId === 'tab-attendance') loadAttendanceLog();
+            if (tabId === 'tab-team') loadTeamData();
+        }
+
+        // Modals
+        function openLeaveModal() {
+            document.getElementById('leaveModalOverlay').style.display = 'flex';
+        }
+        function openExcuseModal() {
+            document.getElementById('excuseModalOverlay').style.display = 'flex';
+        }
+        function closeModals(e) {
+            document.getElementById('leaveModalOverlay').style.display = 'none';
+            document.getElementById('excuseModalOverlay').style.display = 'none';
+        }
+
+        // Load Employee Dashboard Data
+        async function loadMyData() {
+            try {
+                const res = await fetch('/portal/api/my-data');
+                const data = await res.json();
+                if (!data.success) return;
+
+                // Today Status
+                const today = data.today;
+                const statusBadge = document.getElementById('todayStatusBadge');
+                const statusText = document.getElementById('todayStatusText');
+                
+                if (today.is_present) {
+                    statusBadge.className = 'pill-status present';
+                    statusText.textContent = 'حاضر اليوم';
+                } else {
+                    statusBadge.className = 'pill-status absent';
+                    statusText.textContent = 'لم يسجل بعد';
+                }
+
+                document.getElementById('heroCheckIn').textContent = today.check_in || '--:--';
+                document.getElementById('heroCheckOut').textContent = today.check_out || '--:--';
+                document.getElementById('heroPunchesCount').textContent = today.punches_count || 0;
+
+                // KPIs
+                document.getElementById('kpiLeaveBal').textContent = data.stats.annual_balance + ' د';
+                document.getElementById('kpiWorkedDays').textContent = data.stats.days_worked;
+                document.getElementById('kpiLoans').textContent = data.stats.loan_remaining > 0 ? (data.stats.loan_remaining + ' ر.س') : 'لا يوجد';
+
+                // Leaves view elements
+                document.getElementById('leavesMainBalance').innerHTML = `${data.stats.annual_balance} <span style="font-size: 1rem; font-weight: 700; color: var(--ios-subtext);">يوم متبقي</span>`;
+                document.getElementById('leaveAccrued').textContent = data.stats.annual_accrued + ' يوم';
+                document.getElementById('leaveTaken').textContent = data.stats.annual_taken + ' يوم';
+
+                // Render Recent Requests
+                renderRecentRequests(data.recent_leaves);
+            } catch (err) {
+                console.error('Error loading portal data:', err);
+            }
+        }
+
+        function renderRecentRequests(leaves) {
+            const container = document.getElementById('todayRecentRequests');
+            const fullContainer = document.getElementById('allLeavesListContainer');
+            
+            if (!leaves || leaves.length === 0) {
+                const emptyHtml = '<div style="text-align: center; color: var(--ios-subtext); padding: 20px; font-weight: 600;">لا توجد طلبات إجازة مسجلة مؤخراً</div>';
+                container.innerHTML = emptyHtml;
+                if (fullContainer) fullContainer.innerHTML = emptyHtml;
+                return;
+            }
+
+            let html = '';
+            leaves.forEach(l => {
+                let statusClass = 'pending';
+                let statusText = 'قيد المراجعة ⏳';
+                if (l.status === 'approved') {
+                    statusClass = 'approved';
+                    statusText = 'معتمد ✅';
+                } else if (l.status === 'rejected') {
+                    statusClass = 'rejected';
+                    statusText = 'مرفوض ❌';
+                }
+
+                html += `
+                    <div class="list-card">
+                        <div class="list-info">
+                            <h5>${l.leave_type_name || 'إجازة'} (${l.days_count} يوم)</h5>
+                            <p>${l.start_date} إلى ${l.end_date}</p>
+                        </div>
+                        <span class="badge-tag ${statusClass}">${statusText}</span>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            if (fullContainer) fullContainer.innerHTML = html;
+        }
+
+        // Attendance Log
+        async function loadAttendanceLog() {
+            const container = document.getElementById('attendanceListContainer');
+            container.innerHTML = '<div style="text-align: center; color: var(--ios-subtext); padding: 30px;"><i class="fas fa-spinner fa-spin me-2"></i> جاري تحميل السجل...</div>';
+            
+            try {
+                const res = await fetch('/portal/api/attendance');
+                const data = await res.json();
+                if (!data.success || !data.records.length) {
+                    container.innerHTML = '<div style="text-align: center; color: var(--ios-subtext); padding: 30px;">لا توجد حركات مسجلة لهذا الشهر</div>';
+                    return;
+                }
+
+                let html = '';
+                data.records.forEach(r => {
+                    const isOk = (r.check_in !== '-');
+                    html += `
+                        <div class="list-card">
+                            <div class="list-info">
+                                <h5>${r.date}</h5>
+                                <p><i class="fas fa-sign-in-alt text-success me-1"></i> ${r.check_in} &nbsp;&nbsp;|&nbsp;&nbsp; <i class="fas fa-sign-out-alt text-danger me-1"></i> ${r.check_out}</p>
+                            </div>
+                            <span class="badge-tag ${isOk ? 'approved' : 'rejected'}">${r.status}</span>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            } catch (err) {
+                container.innerHTML = '<div style="text-align: center; color: var(--ios-red); padding: 20px;">تعذر تحميل السجل</div>';
+            }
+        }
+
+        // Team and Approvals (For Direct Managers)
+        async function loadTeamData() {
+            try {
+                // 1. Team Summary
+                const resSummary = await fetch('/portal/api/team-summary');
+                const dataSummary = await resSummary.json();
+                if (dataSummary.success) {
+                    document.getElementById('teamTotalCount').textContent = dataSummary.total_team;
+                    document.getElementById('teamPresentCount').textContent = dataSummary.present_today;
+                    document.getElementById('teamPendingCount').textContent = dataSummary.pending_approvals_count;
+                    
+                    const badge = document.getElementById('teamTabBadge');
+                    if (badge) {
+                        if (dataSummary.pending_approvals_count > 0) {
+                            badge.textContent = dataSummary.pending_approvals_count;
+                            badge.style.display = 'block';
+                        } else {
+                            badge.style.display = 'none';
+                        }
+                    }
+
+                    // Render Team List
+                    const membersCont = document.getElementById('teamMembersListContainer');
+                    if (!dataSummary.team_members.length) {
+                        membersCont.innerHTML = '<div style="text-align: center; color: var(--ios-subtext); padding: 20px;">لا يوجد موظفون تابعون لك حالياً</div>';
+                    } else {
+                        let html = '';
+                        dataSummary.team_members.forEach(m => {
+                            html += `
+                                <div class="team-member-card">
+                                    <div style="display: flex; align-items: center;">
+                                        <div class="team-avatar">${(m.name[0] || 'M').toUpperCase()}</div>
+                                        <div>
+                                            <h5 style="font-weight: 800; margin-bottom: 2px;">${m.name}</h5>
+                                            <p style="font-size: 0.75rem; color: var(--ios-subtext); font-weight: 600;">${m.position} • #${m.employee_number}</p>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <span class="badge-tag ${m.is_present ? 'approved' : 'rejected'}">
+                                            ${m.is_present ? ('حاضر ' + m.first_punch) : 'غائب اليوم'}
+                                        </span>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        membersCont.innerHTML = html;
+                    }
+                }
+
+                // 2. Team Approvals
+                const resApp = await fetch('/portal/api/team-approvals');
+                const dataApp = await resApp.json();
+                const appCont = document.getElementById('teamApprovalsContainer');
+                if (dataApp.success && dataApp.requests.length) {
+                    let html = '';
+                    dataApp.requests.forEach(r => {
+                        html += `
+                            <div class="list-card" id="req-card-${r.id}">
+                                <div class="list-info">
+                                    <h5>${r.employee_name} • ${r.leave_type_name}</h5>
+                                    <p>${r.start_date} إلى ${r.end_date} (${r.days_count} يوم)</p>
+                                    ${r.reason ? `<small style="color: var(--ios-subtext); display:block; margin-top:2px;">"${r.reason}"</small>` : ''}
+                                </div>
+                                <div class="approval-actions">
+                                    <button class="btn-approve" onclick="handleApproval(${r.id}, 'approve')">
+                                        <i class="fas fa-check me-1"></i> موافقة
+                                    </button>
+                                    <button class="btn-reject" onclick="handleApproval(${r.id}, 'reject')">
+                                        <i class="fas fa-times me-1"></i> رفض
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    appCont.innerHTML = html;
+                } else {
+                    appCont.innerHTML = '<div style="text-align: center; color: var(--ios-subtext); padding: 20px; font-weight: 600;">لا توجد طلبات معلقة تنتظر الاعتماد حالياً 🎉</div>';
+                }
+
+            } catch (err) {
+                console.error('Error loading team data:', err);
+            }
+        }
+
+        async function handleApproval(requestId, action) {
+            const card = document.getElementById('req-card-' + requestId);
+            if (card) card.style.opacity = '0.5';
+
+            try {
+                const res = await fetch('/portal/api/approve-request', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ request_id: requestId, action: action })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    if (card) {
+                        card.innerHTML = `<div style="padding: 8px; text-align: center; font-weight: 700; width: 100%; color: ${action === 'approve' ? 'var(--ios-green)' : 'var(--ios-red)'}">${data.message}</div>`;
+                        setTimeout(() => card.remove(), 1200);
+                    }
+                    loadTeamData(); // Refresh counter
+                } else {
+                    alert(data.message || 'تعذر اتخاذ الإجراء');
+                    if (card) card.style.opacity = '1';
+                }
+            } catch (e) {
+                alert('حدث خطأ في الاتصال');
+                if (card) card.style.opacity = '1';
+            }
+        }
+
+        // Submit Leave Form
+        async function submitLeave(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitLeaveBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> جاري الإرسال...';
+
+            const formData = new FormData(document.getElementById('leaveForm'));
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const res = await fetch('/portal/api/request-leave', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const json = await res.json();
+                if (json.success) {
+                    alert(json.message);
+                    closeModals();
+                    document.getElementById('leaveForm').reset();
+                    loadMyData();
+                } else {
+                    alert(json.message || 'حدث خطأ');
+                }
+            } catch (err) {
+                alert('تعذر إرسال الطلب');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'إرسال الطلب';
+            }
+        }
+
+        // Submit Excuse Form
+        async function submitExcuse(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitExcuseBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> جاري الإرسال...';
+
+            const formData = new FormData(document.getElementById('excuseForm'));
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const res = await fetch('/portal/api/request-excuse', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const json = await res.json();
+                if (json.success) {
+                    alert(json.message);
+                    closeModals();
+                    document.getElementById('excuseForm').reset();
+                } else {
+                    alert(json.message || 'حدث خطأ');
+                }
+            } catch (err) {
+                alert('تعذر إرسال الطلب');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'إرسال الطلب';
+            }
+        }
+
+        // Service Worker registration for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/static/portal/sw.js')
+                    .then(reg => console.log('Portal PWA ServiceWorker registered'))
+                    .catch(err => console.log('PWA ServiceWorker error:', err));
+            });
+        }
+
+        // Initial Load
+        loadMyData();
+        {% if is_manager %}
+        loadTeamData();
+        {% endif %}
+    </script>
+</body>
+</html>

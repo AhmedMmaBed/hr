@@ -132,6 +132,8 @@ from routes.payroll_routes import payroll_bp
 app.register_blueprint(payroll_bp)
 from routes.contract_routes import contract_bp
 app.register_blueprint(contract_bp)
+from routes.portal_routes import portal_bp
+app.register_blueprint(portal_bp)
 
 # --- Internationalization (i18n) Setup ---
 from flask_babel import Babel
@@ -183,7 +185,7 @@ from flask import request, redirect, url_for, flash, render_template
 @app.before_request
 def check_license_globally():
     # Allow assets, static files, login/logout, and the license page itself
-    if request.endpoint in ['main.license_page', 'auth.login', 'auth.logout', 'static'] or request.path.startswith('/static/'):
+    if request.endpoint in ['main.license_page', 'auth.login', 'auth.logout', 'auth.reset_password', 'static'] or request.path.startswith('/static/'):
         return
 
     # Check license

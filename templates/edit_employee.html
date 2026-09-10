@@ -122,7 +122,9 @@
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="assets-tab" data-bs-toggle="tab" data-bs-target="#assets" type="button" role="tab">{{ _('x.custody_assets') }}</button>
                     </li>
-
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="account-tab" data-bs-toggle="tab" data-bs-target="#account" type="button" role="tab" onclick="loadAccountInfo()"><i class="fas fa-user-shield me-2"></i>حساب البوابة والصلاحيات</button>
+                    </li>
                 </ul>
 
                 <form method="POST" id="editEmployeeForm_Safe"
@@ -704,6 +706,76 @@
                             </div>
                         </div>
 
+                        <!-- TAB: ACCOUNT & PORTAL ACCESS -->
+                        <div class="tab-pane fade" id="account" role="tabpanel">
+                            <h5 class="mb-3"><i class="fas fa-user-shield me-2"></i>حساب البوابة والصلاحيات</h5>
+                            <div class="alert alert-info border-0 rounded-3 shadow-sm py-2 px-3 mb-4">
+                                <small><i class="fas fa-info-circle me-1"></i> يتيح هذا القسم ربط الموظف بحساب دخول لبوابة الموظف (PWA) وتحديد صلاحياته ورتبه، أو إرسال رابط له لتعيين كلمة المرور بنفسه.</small>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">اسم المستخدم للدخول (Username)</label>
+                                    <input type="text" class="form-control" id="acc_username" placeholder="مثال: {{ employee.employee_number }}">
+                                    <small class="text-muted">الافتراضي هو الرقم الوظيفي للموظف.</small>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">نوع الحساب / الرتبة (Role)</label>
+                                    <select class="form-select" id="acc_role">
+                                        <option value="employee">موظف (بوابة الموظف فقط)</option>
+                                        <option value="department_manager">مدير قسم</option>
+                                        <option value="admin">مدير نظام (صلاحيات كاملة)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">الأدوار والصلاحيات المخصصة (Roles)</label>
+                                <div id="acc_roles_checklist" class="d-flex flex-wrap gap-2 p-3 bg-light rounded-3 border">
+                                    <span class="text-muted small">جاري تحميل الأدوار...</span>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-3 mb-4">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="acc_is_active" checked>
+                                    <label class="form-check-label fw-bold" for="acc_is_active">الحساب نشط ويسمح له بالدخول</label>
+                                </div>
+                                <button type="button" class="btn btn-primary btn-sm ms-auto" onclick="saveAccountSettings()">
+                                    <i class="fas fa-save me-1"></i> حفظ إعدادات الحساب والصلاحيات
+                                </button>
+                            </div>
+
+                            <!-- PASSWORD RESET LINK SECTION -->
+                            <hr class="my-4">
+                            <h5 class="mb-3"><i class="fas fa-key me-2 text-warning"></i>رابط تعيين / إعادة تعيين كلمة المرور</h5>
+                            <div class="card bg-light border-0 rounded-3 p-3 mb-3">
+                                <p class="small text-muted mb-3">
+                                    بدلاً من كتابة كلمة مرور للموظف يدوياً، يمكنك توليد رابط مخصص وآمن وصالح لمدة 48 ساعة وإرساله للموظف عبر واتساب أو البريد ليقوم هو باختيار وتعيين كلمة مروره بنفسه والدخول مباشرة للبوابة.
+                                </p>
+                                <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+                                    <button type="button" class="btn btn-outline-dark" id="btnGenLink" onclick="generateResetLink()">
+                                        <i class="fas fa-link me-1 text-primary"></i> توليد رابط تعيين كلمة المرور
+                                    </button>
+                                </div>
+                                <div id="resetLinkBox" style="display: none;">
+                                    <label class="form-label fw-bold">الرابط المُولّد (صالح لمدة 48 ساعة):</label>
+                                    <div class="input-group mb-2">
+                                        <input type="text" class="form-control font-monospace" id="generatedLinkInput" readonly>
+                                        <button class="btn btn-secondary" type="button" onclick="copyResetLink()">
+                                            <i class="fas fa-copy me-1"></i> نسخ الرابط
+                                        </button>
+                                        <a href="#" target="_blank" class="btn btn-success" id="btnSendWhatsapp">
+                                            <i class="fab fa-whatsapp me-1"></i> إرسال عبر واتساب
+                                        </a>
+                                    </div>
+                                    <small class="text-success fw-bold" id="copySuccessAlert" style="display: none;">
+                                        <i class="fas fa-check-circle me-1"></i> تم نسخ الرابط إلى الحافظة!
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
                     </div> <!-- End Tab Content -->
                     
                     <div class="emp-actions d-grid gap-2 d-md-flex justify-content-md-end">
@@ -1230,6 +1302,135 @@
     }
     var _stab = document.getElementById('structure-tab');
     if (_stab) _stab.addEventListener('shown.bs.tab', loadSalaryItems);
+
+    // ==========================================
+    // Portal Account & Password Reset Link JS
+    // ==========================================
+    function loadAccountInfo() {
+        fetch(`/api/employees/${employeeId}/account-info`)
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success) return;
+                
+                if (data.user) {
+                    document.getElementById('acc_username').value = data.user.username || '';
+                    document.getElementById('acc_role').value = data.user.role || 'employee';
+                    document.getElementById('acc_is_active').checked = (data.user.is_active == 1);
+                } else {
+                    document.getElementById('acc_username').value = '{{ employee.employee_number }}';
+                    document.getElementById('acc_role').value = 'employee';
+                    document.getElementById('acc_is_active').checked = true;
+                }
+                
+                // Render Roles Checklist
+                const rolesCont = document.getElementById('acc_roles_checklist');
+                if (!data.all_roles || data.all_roles.length === 0) {
+                    rolesCont.innerHTML = '<span class="text-muted small">لا توجد أدوار إضافية معرفة في النظام</span>';
+                } else {
+                    let html = '';
+                    const assigned = data.user_roles || [];
+                    data.all_roles.forEach(role => {
+                        const isChecked = assigned.includes(role.id) ? 'checked' : '';
+                        html += `
+                            <div class="form-check form-check-inline m-1 p-2 bg-white rounded border">
+                                <input class="form-check-input role-cb" type="checkbox" value="${role.id}" id="role_${role.id}" ${isChecked}>
+                                <label class="form-check-label fw-bold" for="role_${role.id}">
+                                    ${role.name}
+                                    ${role.description ? `<small class="text-muted d-block fw-normal" style="font-size:0.75rem">${role.description}</small>` : ''}
+                                </label>
+                            </div>
+                        `;
+                    });
+                    rolesCont.innerHTML = html;
+                }
+            })
+            .catch(err => console.error('Error loading account info:', err));
+    }
+
+    function saveAccountSettings() {
+        const username = document.getElementById('acc_username').value.trim();
+        const role = document.getElementById('acc_role').value;
+        const is_active = document.getElementById('acc_is_active').checked ? 1 : 0;
+        
+        const selectedRoles = [];
+        document.querySelectorAll('.role-cb:checked').forEach(cb => selectedRoles.push(parseInt(cb.value)));
+        
+        if (!username) {
+            Swal.fire({ icon: 'warning', text: 'يرجى إدخال اسم المستخدم' });
+            return;
+        }
+
+        fetch(`/api/employees/${employeeId}/save-account`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                username: username,
+                role: role,
+                is_active: is_active,
+                role_ids: selectedRoles
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({ icon: 'success', title: data.message, timer: 1800, showConfirmButton: false });
+                loadAccountInfo();
+            } else {
+                Swal.fire({ icon: 'error', text: data.message || 'حدث خطأ أثناء الحفظ' });
+            }
+        })
+        .catch(() => Swal.fire({ icon: 'error', text: 'فشل الاتصال بالخادم' }));
+    }
+
+    function generateResetLink() {
+        const btn = document.getElementById('btnGenLink');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> جاري التوليد...';
+
+        fetch(`/api/employees/${employeeId}/generate-reset-link`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(res => res.json())
+        .then(data => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-arrows-rotate me-1 text-primary"></i> إعادة توليد رابط جديد';
+            
+            if (data.success) {
+                document.getElementById('resetLinkBox').style.display = 'block';
+                document.getElementById('generatedLinkInput').value = data.link;
+                
+                // WhatsApp Link
+                const waText = encodeURIComponent(data.whatsapp_msg);
+                const phone = '{{ employee.phone or "" }}'.replace(/[^0-9]/g, '');
+                const waUrl = phone ? `https://api.whatsapp.com/send?phone=${phone}&text=${waText}` : `https://api.whatsapp.com/send?text=${waText}`;
+                document.getElementById('btnSendWhatsapp').href = waUrl;
+                
+                // Also refresh username field if it was created
+                if (data.username) {
+                    document.getElementById('acc_username').value = data.username;
+                }
+            } else {
+                Swal.fire({ icon: 'error', text: data.message || 'فشل توليد الرابط' });
+            }
+        })
+        .catch(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-link me-1 text-primary"></i> توليد رابط تعيين كلمة المرور';
+            Swal.fire({ icon: 'error', text: 'فشل الاتصال بالخادم' });
+        });
+    }
+
+    function copyResetLink() {
+        const input = document.getElementById('generatedLinkInput');
+        input.select();
+        input.setSelectionRange(0, 99999);
+        navigator.clipboard.writeText(input.value).then(() => {
+            const alert = document.getElementById('copySuccessAlert');
+            alert.style.display = 'inline-block';
+            setTimeout(() => { alert.style.display = 'none'; }, 3000);
+        });
+    }
 
 </script>
 {% endblock %}

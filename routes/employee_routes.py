@@ -1933,3 +1933,145 @@ def return_asset(id):
         print(f'audit log failed on asset return: {e}')
     conn.commit()
     return jsonify({'success': True})
+
+
+# -------------------------------------------------------------
+# Employee Portal User Account & Password Reset Link Endpoints
+# -------------------------------------------------------------
+
+@employee_bp.route('/api/employees/<int:emp_id>/account-info')
+@login_required
+@require_permission('employee.edit')
+def api_employee_account_info(emp_id):
+    conn = get_db_connection()
+    emp = conn.execute("SELECT id, name, employee_number, email FROM employees WHERE id = ?", (emp_id,)).fetchone()
+    if not emp:
+        return jsonify({'success': False, 'message': 'الموظف غير موجود'}), 404
+        
+    user = conn.execute("SELECT id, username, full_name, role, is_active FROM users WHERE employee_id = ?", (emp_id,)).fetchone()
+    
+    user_roles = []
+    if user:
+        r_rows = conn.execute("SELECT role_id FROM user_roles WHERE user_id = ?", (user['id'],)).fetchall()
+        user_roles = [r['role_id'] for r in r_rows]
+        
+    all_roles = conn.execute("SELECT id, name, description FROM roles ORDER BY name ASC").fetchall()
+    
+    return jsonify({
+        'success': True,
+        'has_account': bool(user),
+        'user': dict(user) if user else None,
+        'user_roles': user_roles,
+        'all_roles': [dict(r) for r in all_roles]
+    })
+
+@employee_bp.route('/api/employees/<int:emp_id>/save-account', methods=['POST'])
+@login_required
+@require_permission('employee.edit')
+def api_employee_save_account(emp_id):
+    import secrets
+    from werkzeug.security import generate_password_hash
+    conn = get_db_connection()
+    
+    emp = conn.execute("SELECT id, name, employee_number, email FROM employees WHERE id = ?", (emp_id,)).fetchone()
+    if not emp:
+        return jsonify({'success': False, 'message': 'الموظف غير موجود'}), 404
+        
+    data = request.get_json(silent=True) or request.form
+    username = (data.get('username') or emp['employee_number']).strip()
+    role = data.get('role', 'employee')
+    is_active = 1 if str(data.get('is_active', '1')) in ['1', 'true', 'on'] else 0
+    role_ids = data.get('role_ids', [])
+    if isinstance(role_ids, str):
+        role_ids = [int(r) for r in role_ids.split(',') if r.strip()]
+        
+    user = conn.execute("SELECT id FROM users WHERE employee_id = ?", (emp_id,)).fetchone()
+    
+    # Check if username is taken by another user
+    existing = conn.execute("SELECT id FROM users WHERE LOWER(username) = LOWER(?) AND (employee_id != ? OR employee_id IS NULL)", 
+                            (username, emp_id)).fetchone()
+    if existing:
+        return jsonify({'success': False, 'message': 'اسم المستخدم مستخدم بالفعل، يرجى اختيار اسم آخر'}), 400
+        
+    if user:
+        user_id = user['id']
+        conn.execute("UPDATE users SET username = ?, role = ?, is_active = ?, full_name = ? WHERE id = ?",
+                     (username, role, is_active, emp['name'], user_id))
+    else:
+        # Create user with random initial password (to be reset via link)
+        rand_pw = secrets.token_hex(12)
+        hashed_pw = generate_password_hash(rand_pw)
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO users (username, password, full_name, role, is_active, employee_id)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (username, hashed_pw, emp['name'], role, is_active, emp_id))
+        user_id = cursor.lastrowid
+        
+    # Update user roles
+    conn.execute("DELETE FROM user_roles WHERE user_id = ?", (user_id,))
+    for r_id in role_ids:
+        conn.execute("INSERT OR IGNORE INTO user_roles (user_id, role_id) VALUES (?, ?)", (user_id, r_id))
+        
+    conn.commit()
+    return jsonify({'success': True, 'message': 'تم حفظ بيانات الحساب والصلاحيات بنجاح ✅', 'user_id': user_id})
+
+@employee_bp.route('/api/employees/<int:emp_id>/generate-reset-link', methods=['POST'])
+@login_required
+@require_permission('employee.edit')
+def api_generate_reset_link(emp_id):
+    import secrets
+    from datetime import datetime, timedelta
+    from werkzeug.security import generate_password_hash
+    conn = get_db_connection()
+    
+    emp = conn.execute("SELECT id, name, employee_number, phone FROM employees WHERE id = ?", (emp_id,)).fetchone()
+    if not emp:
+        return jsonify({'success': False, 'message': 'الموظف غير موجود'}), 404
+        
+    user = conn.execute("SELECT id, username FROM users WHERE employee_id = ?", (emp_id,)).fetchone()
+    if not user:
+        # Create user account automatically for this employee
+        username = str(emp['employee_number'])
+        rand_pw = secrets.token_hex(12)
+        hashed_pw = generate_password_hash(rand_pw)
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO users (username, password, full_name, role, is_active, employee_id)
+            VALUES (?, ?, ?, 'employee', 1, ?)
+        ''', (username, hashed_pw, emp['name'], emp_id))
+        user_id = cursor.lastrowid
+        user_username = username
+    else:
+        user_id = user['id']
+        user_username = user['username']
+        
+    # Generate token
+    token = secrets.token_urlsafe(32)
+    expires_at = (datetime.now() + timedelta(hours=48)).isoformat()
+    
+    # Invalidate previous unused tokens for this user
+    conn.execute("UPDATE password_reset_tokens SET is_used = 1 WHERE user_id = ?", (user_id,))
+    
+    conn.execute('''
+        INSERT INTO password_reset_tokens (user_id, token, expires_at, is_used)
+        VALUES (?, ?, ?, 0)
+    ''', (user_id, token, expires_at))
+    conn.commit()
+    
+    # Construct shareable link
+    reset_url = request.host_url.rstrip('/') + url_for('auth.reset_password') + f'?token={token}'
+    
+    whatsapp_msg = f"مرحباً {emp['name']}، تم إنشاء حسابك في بوابة الموظف. يرجى الدخول على الرابط التالي لتعيين كلمة المرور الخاصة بك:\n{reset_url}\nاسم المستخدم: {user_username}"
+    
+    return jsonify({
+        'success': True,
+        'link': reset_url,
+        'reset_url': reset_url,
+        'token': token,
+        'username': user_username,
+        'employee_name': emp['name'],
+        'whatsapp_msg': whatsapp_msg,
+        'expires_hours': 48
+    })
+
